@@ -7,8 +7,8 @@ function NavBar() {
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
       <div className="container-fluid">
         <Link className="navbar-brand" to="/">Mi tienda</Link>
-        <div className="collapse navbar-collapse">
-          <ul className="navbar-nav ms-auto">
+        <div className="collapse navbar-collapse d-flex justify-content-between">
+          <ul className="navbar-nav">
             <li className="nav-item">
               <NavLink
                 to="/category/vehiculos"
@@ -34,7 +34,10 @@ function NavBar() {
               </NavLink>
             </li>
           </ul>
-          <CartWidget />
+          {/* Aquí está el CartWidget */}
+          <div className="d-flex align-items-center">
+            <CartWidget />
+          </div>
         </div>
       </div>
     </nav>
@@ -42,5 +45,3 @@ function NavBar() {
 }
 
 export default NavBar;
-
-

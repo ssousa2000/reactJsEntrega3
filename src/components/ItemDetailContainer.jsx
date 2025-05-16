@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { productos } from '../asyncMock';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { productos } from "../asyncMock";
+import { useCart } from "../context/CartContext";
+import ItemDetail from "./ItemDetail";  // Importa ItemDetail correctamente
 
 function ItemDetailContainer() {
   const { id } = useParams();
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(1);
+  const { cartItems, addToCart, removeOneFromCart } = useCart();
 
   useEffect(() => {
     setLoading(true);
@@ -13,10 +17,30 @@ function ItemDetailContainer() {
       const found = productos.find((p) => p.id.toString() === id);
       setItem(found || null);
       setLoading(false);
-    }, 500); // Simulamos pequeña espera
+      setQuantity(1);
+    }, 500);
 
     return () => clearTimeout(timeout);
   }, [id]);
+
+  const handleAddToCart = () => {
+    if (!item) return;
+
+    const inCart = cartItems.find((cartItem) => cartItem.id === item.id);
+    const currentQuantity = inCart ? inCart.quantity : 0;
+
+    if (currentQuantity + quantity > item.stock) {
+      alert("No puedes agregar más unidades que el stock disponible.");
+      return;
+    }
+
+    addToCart(item, quantity);
+  };
+
+  const handleRemoveFromCart = () => {
+    if (!item) return;
+    removeOneFromCart(item.id);
+  };
 
   if (loading) {
     return (
@@ -38,16 +62,13 @@ function ItemDetailContainer() {
 
   return (
     <div className="container mt-5">
-      <div className="card">
-        <div className="card-body">
-          <h2 className="card-title">{item.titulo}</h2>
-          <p className="card-text">{item.descripcion}</p>
-          <p className="card-text">
-            <small className="text-muted">Stock disponible: {item.stock}</small>
-          </p>
-          <button className="btn btn-primary">Agregar al carrito</button>
-        </div>
-      </div>
+      <ItemDetail
+        item={item}
+        quantity={quantity}
+        setQuantity={setQuantity}
+        handleAddToCart={handleAddToCart}
+        handleRemoveFromCart={handleRemoveFromCart}
+      />
     </div>
   );
 }
